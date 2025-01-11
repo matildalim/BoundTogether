@@ -1,10 +1,9 @@
-using NUnit.Framework.Constraints;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CubeController : MonoBehaviour
+public class SphereController : MonoBehaviour
 {
     private PlayerControls controls;
     private Vector2 moveInput;
@@ -15,8 +14,9 @@ public class CubeController : MonoBehaviour
     {
         controls = new PlayerControls();
 
-        controls.Cube.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        controls.Cube.Move.canceled += ctx => moveInput = Vector2.zero;
+        // Make sure you map to the correct input action and action map
+        controls.Sphere.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        controls.Sphere.Move.canceled += ctx => moveInput = Vector2.zero;
     }
 
     void OnEnable() => controls.Enable();
