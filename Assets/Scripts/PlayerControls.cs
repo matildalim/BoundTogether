@@ -167,7 +167,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 }
             ]
         }
-    ],
+        ],
     ""controlSchemes"": []
 }");
         // Cube
