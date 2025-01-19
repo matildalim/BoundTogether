@@ -46,8 +46,8 @@ public class CubeController : MonoBehaviour
         Debug.Log("Sphere position: " + sphere.position);
 
         // Start the cube and sphere at separate positions
-        transform.position = new Vector3(5f, 0, 0);   // Cube starts to the right
-        sphere.position = new Vector3(-5f, 0, 0);     // Sphere starts to the left
+        transform.position = new Vector3(-5f, 0, 0);   // Cube starts to the right
+        sphere.position = new Vector3(5f, 0, 0);     // Sphere starts to the left
 
         // Apply a slight variation in the forward speed
         currentForwardSpeed = forwardSpeed + Random.Range(-forwardSpeedVariation, forwardSpeedVariation);
