@@ -7,7 +7,9 @@ public class CubeController : MonoBehaviour
     private PlayerControls controls;
     private Vector2 moveInput;
 
-    public float moveSpeed = 5f; // Speed of lateral movement
+    public float moveSpeed = 5f; // Speed of lateral and vertical movement
+    public float forwardSpeed = 10f; // Base forward movement speed
+    public float forwardSpeedVariation = 1f; // Variation in forward speed
     public float smoothTime = 0.1f; // Time for smoothing input
     public Camera mainCamera; // Reference to the camera
 
@@ -15,12 +17,21 @@ public class CubeController : MonoBehaviour
 
     public Transform sphere; // Reference to the sphere
 
+    private float currentForwardSpeed; // Variable forward speed for the cube
+    private bool isMoving = false; // To track if controls are pressed
+
     void Awake()
     {
         controls = new PlayerControls();
 
-        controls.Cube.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        controls.Cube.Move.canceled += ctx => moveInput = Vector2.zero;
+        controls.Cube.Move.performed += ctx => {
+            moveInput = ctx.ReadValue<Vector2>();
+            isMoving = true;
+        };
+        controls.Cube.Move.canceled += ctx => {
+            moveInput = Vector2.zero;
+            isMoving = false;
+        };
 
         mainCamera = Camera.main; // Get the main camera
     }
@@ -30,33 +41,59 @@ public class CubeController : MonoBehaviour
 
     void Start()
     {
-        // Start the cube and sphere apart
-        transform.position = new Vector3(-5f, 0, 0); // Cube starts on the left
-        sphere.position = new Vector3(5f, 0, 0); // Sphere starts on the right
+        // Log to confirm positions are set correctly
+        Debug.Log("Cube position: " + transform.position);
+        Debug.Log("Sphere position: " + sphere.position);
+
+        // Start the cube and sphere at separate positions
+        transform.position = new Vector3(5f, 0, 0);   // Cube starts to the right
+        sphere.position = new Vector3(-5f, 0, 0);     // Sphere starts to the left
+
+        // Apply a slight variation in the forward speed
+        currentForwardSpeed = forwardSpeed + Random.Range(-forwardSpeedVariation, forwardSpeedVariation);
     }
 
     void Update()
     {
-        // Smooth movement based on input
-        Vector3 targetPosition = new Vector3(moveInput.x * moveSpeed, moveInput.y * moveSpeed, 0f);
-        Vector3 smoothedMovement = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
-
-        // Apply the movement
-        transform.position = new Vector3(smoothedMovement.x, smoothedMovement.y, transform.position.z);
-
-        // Move cube closer to the sphere when player inputs are detected
-        MoveCloserToSphere();
-
-        // Keep the cube within the screen bounds vertically
-        Vector3 position = transform.position;
-        position.y = Mathf.Clamp(position.y, -mainCamera.orthographicSize, mainCamera.orthographicSize);
-        transform.position = position;
+        AdjustForwardSpeed();
     }
 
-    void MoveCloserToSphere()
+    void LateUpdate()
     {
-        // Move towards the sphere
-        Vector3 direction = (sphere.position - transform.position).normalized;
-        transform.position += direction * moveSpeed * Time.deltaTime;
+        // Smooth lateral and vertical movement based on input
+        Vector3 inputMovement = new Vector3(moveInput.x * moveSpeed, moveInput.y * moveSpeed, 0f);
+        Vector3 smoothedMovement = Vector3.SmoothDamp(transform.position, transform.position + inputMovement, ref velocity, smoothTime);
+
+        // If no input, move them apart
+        if (!isMoving)
+        {
+            Vector3 directionToMove = (transform.position.x < sphere.position.x) ? Vector3.right : Vector3.left;
+            smoothedMovement += directionToMove * moveSpeed * Time.deltaTime;
+        }
+
+        // Apply movement
+        transform.position = new Vector3(smoothedMovement.x, smoothedMovement.y, transform.position.z);
+
+        // Apply forward movement
+        transform.position += Vector3.forward * currentForwardSpeed * Time.deltaTime;
+    }
+
+    void AdjustForwardSpeed()
+    {
+        // Calculate the distance to the sphere
+        float distance = Vector3.Distance(transform.position, sphere.position);
+
+        // Adjust forward speed based on the distance
+        if (distance > 4f) // Too far apart
+        {
+            currentForwardSpeed += 0.1f; // Speed up
+        }
+        else if (distance < 2f) // Too close
+        {
+            currentForwardSpeed -= 0.1f; // Slow down
+        }
+
+        // Clamp the forward speed to avoid extreme values
+        currentForwardSpeed = Mathf.Clamp(currentForwardSpeed, forwardSpeed - forwardSpeedVariation, forwardSpeed + forwardSpeedVariation);
     }
 }
