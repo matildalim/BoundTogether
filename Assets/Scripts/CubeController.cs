@@ -45,12 +45,10 @@ public class CubeController : MonoBehaviour
         Debug.Log("Cube position: " + transform.position);
         Debug.Log("Sphere position: " + sphere.position);
 
-        // Start the cube and sphere at separate positions
-        transform.position = new Vector3(-5f, 0, 0);   // Cube starts to the right
-        sphere.position = new Vector3(5f, 0, 0);     // Sphere starts to the left
+        if (transform.position == Vector3.zero) transform.position = new Vector3(5f, 0, 0);
+        if (sphere.position == Vector3.zero) sphere.position = new Vector3(-5f, 0, 0);
 
-        // Apply a slight variation in the forward speed
-        currentForwardSpeed = forwardSpeed + Random.Range(-forwardSpeedVariation, forwardSpeedVariation);
+        currentForwardSpeed = forwardSpeed + Random.Range(-forwardSpeedVariation, forwardSpeedVariation); //slight variation in forward speed
     }
 
     void Update()
@@ -61,7 +59,7 @@ public class CubeController : MonoBehaviour
     void LateUpdate()
     {
         // Smooth lateral and vertical movement based on input
-        Vector3 inputMovement = new Vector3(moveInput.x * moveSpeed, moveInput.y * moveSpeed, 0f);
+        Vector3 inputMovement = new Vector3(moveInput.x * moveSpeed, 0f);
         Vector3 smoothedMovement = Vector3.SmoothDamp(transform.position, transform.position + inputMovement, ref velocity, smoothTime);
 
         // If no input, move them apart
@@ -72,7 +70,7 @@ public class CubeController : MonoBehaviour
         }
 
         // Apply movement
-        transform.position = new Vector3(smoothedMovement.x, smoothedMovement.y, transform.position.z);
+        transform.position = new Vector3(smoothedMovement.x, transform.position.y, transform.position.z);
 
         // Apply forward movement
         transform.position += Vector3.forward * currentForwardSpeed * Time.deltaTime;
@@ -88,7 +86,7 @@ public class CubeController : MonoBehaviour
         {
             currentForwardSpeed += 0.1f; // Speed up
         }
-        else if (distance < 2f) // Too close
+        else if (distance < 2f) 
         {
             currentForwardSpeed -= 0.1f; // Slow down
         }

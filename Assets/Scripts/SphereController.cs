@@ -45,9 +45,8 @@ public class SphereController : MonoBehaviour
         Debug.Log("Sphere position: " + transform.position);
         Debug.Log("Cube position: " + cube.position);
 
-        // Start the sphere and cube at separate positions
-        transform.position = new Vector3(5f, 0, 0);  // Sphere starts to the left
-        cube.position = new Vector3(-5f, 0, 0);        // Cube starts to the right
+        if (transform.position == Vector3.zero) transform.position = new Vector3(-5f, 0, 0);
+        if (cube.position == Vector3.zero) cube.position = new Vector3(5f, 0, 0);
 
         // Apply a slight variation in the forward speed
         currentForwardSpeed = forwardSpeed + Random.Range(-forwardSpeedVariation, forwardSpeedVariation);
@@ -62,7 +61,7 @@ public class SphereController : MonoBehaviour
     void LateUpdate()
     {
         // Smooth lateral and vertical movement based on input
-        Vector3 inputMovement = new Vector3(moveInput.x * moveSpeed, moveInput.y * moveSpeed, 0f);
+        Vector3 inputMovement = new Vector3(moveInput.x * moveSpeed, 0f);
         Vector3 smoothedMovement = Vector3.SmoothDamp(transform.position, transform.position + inputMovement, ref velocity, smoothTime);
 
         // If no input, move them apart
@@ -73,7 +72,7 @@ public class SphereController : MonoBehaviour
         }
 
         // Apply movement
-        transform.position = new Vector3(smoothedMovement.x, smoothedMovement.y, transform.position.z);
+        transform.position = new Vector3(smoothedMovement.x, transform.position.y, transform.position.z);
 
         // Apply forward movement
         transform.position += Vector3.forward * currentForwardSpeed * Time.deltaTime;
