@@ -429,6 +429,8 @@ MonoBehaviour:
   cube: {fileID: 1851795782}
   sphere: {fileID: 373525997}
   offset: {x: 0, y: 5, z: -10}
+  smoothSpeed: 0.15
+  forwardOffset: -5
 --- !u!4 &746207437
 Transform:
   m_ObjectHideFlags: 0
@@ -613,7 +615,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 104
+  field of view: 72.9
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
