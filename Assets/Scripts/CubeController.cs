@@ -6,13 +6,11 @@ public class CubeController : BaseCharacter
 {
     protected override void SetupControls()
     {
-        controls.Cube.Move.performed += ctx =>
-        {
+        controls.Cube.Move.performed += ctx => {
             moveInput = ctx.ReadValue<Vector2>();
             isMoving = true;
         };
-        controls.Cube.Move.canceled += ctx =>
-        {
+        controls.Cube.Move.canceled += ctx => {
             moveInput = Vector2.zero;
             isMoving = false;
         };
@@ -23,3 +21,4 @@ public class CubeController : BaseCharacter
         return new Vector3(5f, 0f, 0f);
     }
 }
+
