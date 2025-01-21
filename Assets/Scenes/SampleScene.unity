@@ -276,8 +276,10 @@ MonoBehaviour:
   forwardSpeed: 10
   forwardSpeedVariation: 1
   smoothTime: 0.1
-  mainCamera: {fileID: 963194227}
-  cube: {fileID: 1851795782}
+  maxDistance: 4
+  minDistance: 2
+  distanceSpeedMultiplier: 0.1
+  otherPlayer: {fileID: 1851795782}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -812,8 +814,10 @@ MonoBehaviour:
   forwardSpeed: 10
   forwardSpeedVariation: 1
   smoothTime: 0.1
-  mainCamera: {fileID: 963194227}
-  sphere: {fileID: 373525997}
+  maxDistance: 4
+  minDistance: 2
+  distanceSpeedMultiplier: 0.1
+  otherPlayer: {fileID: 373525997}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
