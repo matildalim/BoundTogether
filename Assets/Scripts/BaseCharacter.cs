@@ -13,9 +13,12 @@ public abstract class BaseCharacter : MonoBehaviour
     public float maxDistance = 4f;
     public float minDistance = 2f;
     public float distanceSpeedMultiplier = 0.1f;
+    public float proximityRange = 3f;
 
     [Header("References")]
     public Transform otherPlayer;
+    public ParticleSystem glowParticles;
+
     protected PlayerControls controls;
     protected Vector2 moveInput;
     protected Vector3 velocity;
@@ -106,6 +109,24 @@ public abstract class BaseCharacter : MonoBehaviour
         );
     }
 
+    protected virtual void CheckProximityGlow()
+    {
+        if (glowParticles == null || otherPlayer == null) return;
+
+        float distance = Vector3.Distance(transform.position, otherPlayer.position);
+        var emission = glowParticles.emission;
+
+        if (distance <= proximityRange)
+        {
+            emission.rateOverTime = 50; // Increase glow effect
+        }
+        else
+        {
+            emission.rateOverTime = 5; // Dim glow effect
+        }
+    }
+
+
     protected virtual void OnEnable()
     {
         controls?.Enable();
@@ -118,13 +139,14 @@ public abstract class BaseCharacter : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        // Visual debug for min/max distances
         if (otherPlayer != null)
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, maxDistance);
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, minDistance);
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, proximityRange); // Debug proximity bubble
         }
     }
 }
