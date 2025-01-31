@@ -17,7 +17,7 @@ public abstract class BaseCharacter : MonoBehaviour
 
     [Header("References")]
     public Transform otherPlayer;
-    public ParticleSystem glowParticles;
+    public TrailRenderer trailRenderer;
 
     protected PlayerControls controls;
     protected Vector2 moveInput;
@@ -51,8 +51,11 @@ public abstract class BaseCharacter : MonoBehaviour
 
     protected virtual void Update()
     {
+        //Debug.Log("BaseCharacter Update running on " + gameObject.name);
+
         AdjustForwardSpeed();
         HandleMovement();
+        AdjustTrailEffect();
     }
 
     protected virtual void HandleMovement()
@@ -109,23 +112,7 @@ public abstract class BaseCharacter : MonoBehaviour
         );
     }
 
-    protected virtual void CheckProximityGlow()
-    {
-        if (glowParticles == null || otherPlayer == null) return;
-
-        float distance = Vector3.Distance(transform.position, otherPlayer.position);
-        var emission = glowParticles.emission;
-
-        if (distance <= proximityRange)
-        {
-            emission.rateOverTime = 50; // Increase glow effect
-        }
-        else
-        {
-            emission.rateOverTime = 5; // Dim glow effect
-        }
-    }
-
+    protected abstract void AdjustTrailEffect(); //making it abstract allows the subclass to define it
 
     protected virtual void OnEnable()
     {
@@ -141,10 +128,10 @@ public abstract class BaseCharacter : MonoBehaviour
     {
         if (otherPlayer != null)
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, maxDistance);
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, minDistance);
+            //Gizmos.color = Color.yellow;
+            //Gizmos.DrawWireSphere(transform.position, maxDistance);
+            //Gizmos.color = Color.red;
+            //Gizmos.DrawWireSphere(transform.position, minDistance);
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(transform.position, proximityRange); // Debug proximity bubble
         }
