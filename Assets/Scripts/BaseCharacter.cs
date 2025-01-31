@@ -1,3 +1,5 @@
+using Unity.Hierarchy;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,6 +20,7 @@ public abstract class BaseCharacter : MonoBehaviour
     [Header("References")]
     public Transform otherPlayer;
     public TrailRenderer trailRenderer;
+    public ParticleSystem proximityBubble;
 
     protected PlayerControls controls;
     protected Vector2 moveInput;
@@ -56,6 +59,7 @@ public abstract class BaseCharacter : MonoBehaviour
         AdjustForwardSpeed();
         HandleMovement();
         AdjustTrailEffect();
+        HandleProximityBubble();
     }
 
     protected virtual void HandleMovement()
@@ -113,6 +117,39 @@ public abstract class BaseCharacter : MonoBehaviour
     }
 
     protected abstract void AdjustTrailEffect(); //making it abstract allows the subclass to define it
+
+    public void HandleProximityBubble()
+    {
+        if (otherPlayer != null)
+        {
+            float distance = Vector3.Distance(transform.position, otherPlayer.position);
+            bool isWithinProximity = distance <= proximityRange;
+
+            // Debug logs
+            Debug.Log("Distance: " + distance);
+            Debug.Log("Proximity range: " + proximityRange);
+            Debug.Log("Is within proximity: " + isWithinProximity);
+
+            if (isWithinProximity && !proximityBubble.isPlaying)
+            {
+                proximityBubble.Play(); // Show bubble
+                Debug.Log("Playing proximity bubble.");
+            }
+            else if (!isWithinProximity && proximityBubble.isPlaying)
+            {
+                proximityBubble.Stop(); // Hide bubble
+                Debug.Log("Stopping proximity bubble.");
+            }
+
+            Vector3 midpoint = (transform.position + otherPlayer.position) / 2f; // update bubble position to be between the two objects
+            proximityBubble.transform.position = midpoint;
+
+            float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
+            float bubbleSize = Mathf.Lerp(5f, 0f, normalizedDistance);
+            proximityBubble.transform.localScale = new Vector3( bubbleSize, bubbleSize, bubbleSize);
+  
+        }
+    }
 
     protected virtual void OnEnable()
     {
