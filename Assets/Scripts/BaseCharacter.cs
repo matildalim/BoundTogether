@@ -24,6 +24,10 @@ public abstract class BaseCharacter : MonoBehaviour
     public ParticleSystem proximityBubble;
     public ParticleSystem energyPulse;
 
+    [Header("Background Effects")]
+    public ParticleSystem backgroundParticles;
+
+
     protected PlayerControls controls;
     protected Vector2 moveInput;
     protected Vector3 velocity;
@@ -42,6 +46,12 @@ public abstract class BaseCharacter : MonoBehaviour
     {
         InitializePosition();
         currentForwardSpeed = forwardSpeed + Random.Range(-forwardSpeedVariation, forwardSpeedVariation);
+    
+        if (backgroundParticles != null)
+        {
+            backgroundParticles.Play();
+        }
+    
     }
 
     protected virtual void InitializePosition()
@@ -62,6 +72,7 @@ public abstract class BaseCharacter : MonoBehaviour
         HandleMovement();
         AdjustTrailEffect();
         HandleProximityBubble();
+        UpdateBackgroundParticles();
     }
 
     protected virtual void HandleMovement()
@@ -148,7 +159,11 @@ public abstract class BaseCharacter : MonoBehaviour
                 float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
 
                 float bubbleSize = Mathf.Lerp(1f, 5f, Mathf.PingPong(Time.time, 1));
-                proximityBubble.transform.localScale = new Vector3(bubbleSize, bubbleSize, bubbleSize);
+                //proximityBubble.transform.localScale = new Vector3(bubbleSize, bubbleSize, bubbleSize);
+
+                var mainModule = proximityBubble.main;
+                mainModule.startSize = bubbleSize;
+
 
                 var emission = proximityBubble.emission; //emission rate based on proximity
                 emission.rateOverTime = Mathf.Lerp(10, 0, normalizedDistance);
@@ -167,6 +182,16 @@ public abstract class BaseCharacter : MonoBehaviour
         if (energyPulse != null)
         {
             energyPulse.Play();
+        }
+    }
+
+    void UpdateBackgroundParticles()
+    {
+        if (backgroundParticles != null)
+        {
+            Vector3 newPosition = backgroundParticles.transform.position;
+            newPosition.z += currentForwardSpeed * Time.deltaTime;
+            backgroundParticles.transform.position = newPosition;
         }
     }
 
