@@ -1,3 +1,4 @@
+using System.Xml.Schema;
 using Unity.Hierarchy;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -21,6 +22,7 @@ public abstract class BaseCharacter : MonoBehaviour
     public Transform otherPlayer;
     public TrailRenderer trailRenderer;
     public ParticleSystem proximityBubble;
+    public ParticleSystem energyPulse;
 
     protected PlayerControls controls;
     protected Vector2 moveInput;
@@ -130,10 +132,26 @@ public abstract class BaseCharacter : MonoBehaviour
             Debug.Log("Proximity range: " + proximityRange);
             Debug.Log("Is within proximity: " + isWithinProximity);
 
-            if (isWithinProximity && !proximityBubble.isPlaying)
+            if (isWithinProximity) //play or stop bubble within proximity
             {
-                proximityBubble.Play(); // Show bubble
-                Debug.Log("Playing proximity bubble.");
+                if (!proximityBubble.isPlaying)
+                {
+                    proximityBubble.Play(); // Show bubble
+                    Debug.Log("Playing proximity bubble.");
+                    TriggerEnergyPulse();
+
+                }
+
+                Vector3 midpoint = (transform.position + otherPlayer.position) / 2f; // update bubble position to be between the two objects
+                proximityBubble.transform.position = midpoint;
+
+                float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
+
+                float bubbleSize = Mathf.Lerp(1f, 5f, Mathf.PingPong(Time.time, 1));
+                proximityBubble.transform.localScale = new Vector3(bubbleSize, bubbleSize, bubbleSize);
+
+                var emission = proximityBubble.emission; //emission rate based on proximity
+                emission.rateOverTime = Mathf.Lerp(10, 0, normalizedDistance);
             }
             else if (!isWithinProximity && proximityBubble.isPlaying)
             {
@@ -141,13 +159,14 @@ public abstract class BaseCharacter : MonoBehaviour
                 Debug.Log("Stopping proximity bubble.");
             }
 
-            Vector3 midpoint = (transform.position + otherPlayer.position) / 2f; // update bubble position to be between the two objects
-            proximityBubble.transform.position = midpoint;
+        }
+    }
 
-            float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
-            float bubbleSize = Mathf.Lerp(5f, 0f, normalizedDistance);
-            proximityBubble.transform.localScale = new Vector3( bubbleSize, bubbleSize, bubbleSize);
-  
+    void TriggerEnergyPulse()
+    {
+        if (energyPulse != null)
+        {
+            energyPulse.Play();
         }
     }
 
@@ -162,7 +181,7 @@ public abstract class BaseCharacter : MonoBehaviour
     }
 
     void OnDrawGizmos()
-    {
+    {   
         if (otherPlayer != null)
         {
             //Gizmos.color = Color.yellow;
