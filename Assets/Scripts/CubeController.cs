@@ -32,10 +32,10 @@ public class CubeController : BaseCharacter
         }
 
         float distance = Vector3.Distance(transform.position, otherPlayer.position);
-        float newWidth = Mathf.Lerp(0.1f, 0.5f, 1 - Mathf.InverseLerp(minDistance, maxDistance, distance));
-        float opacity = Mathf.Lerp(1f, 0.2f, 1 - Mathf.InverseLerp(minDistance, maxDistance, distance));
+        float newWidth = Mathf.Lerp(0.1f, 0.5f, 1 - Mathf.InverseLerp(minDistance, maxDistance, distance)); //smaller width range
+        float opacity = Mathf.Lerp(1f, 0.2f, 1 - Mathf.InverseLerp(minDistance, maxDistance, distance)); //less fading
 
-        Color baseColor = Color.cyan;
+        Color baseColor = Color.yellow;
         Color fadedColor = new Color(baseColor.r, baseColor.g, baseColor.b, 0f);
 
         Gradient gradient = new Gradient();
@@ -45,8 +45,9 @@ public class CubeController : BaseCharacter
         );
 
         trailRenderer.startWidth = newWidth;
-        trailRenderer.endWidth = newWidth * 0.5f;
+        trailRenderer.endWidth = newWidth * 0.5f; //keep the end width smaller for rigideffect
         trailRenderer.colorGradient = gradient;
+        trailRenderer.time = 0.3f; //set shorter trail time for a more rigideffect
     }
 }
 

@@ -26,6 +26,8 @@ public abstract class BaseCharacter : MonoBehaviour
 
     [Header("Background Effects")]
     public ParticleSystem backgroundParticles;
+    public float maxBackgroundEmission = 50f;
+    public float minBackgroundEmission = 5f;
 
 
     protected PlayerControls controls;
@@ -148,7 +150,6 @@ public abstract class BaseCharacter : MonoBehaviour
                 if (!proximityBubble.isPlaying)
                 {
                     proximityBubble.Play(); // Show bubble
-                    Debug.Log("Playing proximity bubble.");
                     TriggerEnergyPulse();
 
                 }
@@ -181,17 +182,53 @@ public abstract class BaseCharacter : MonoBehaviour
     {
         if (energyPulse != null)
         {
-            energyPulse.Play();
+            float distance = Vector3.Distance(transform.position, otherPlayer.position);
+            float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
+
+            float pulseSize = Mathf.Lerp(0.5f, 2f, 1 - normalizedDistance);
+            float pulseOpacity = Mathf.Lerp(0.1f, 1f, 1 - normalizedDistance);
+
+            var mainModule = energyPulse.main;
+            mainModule.startSize = pulseSize;
+            mainModule.startColor = new Color(1f, 0.5f, 0f, pulseOpacity);
+
+            if (!energyPulse.isPlaying && normalizedDistance > 0.2f)
+            {
+                energyPulse.Play();
+            }
+            else if (energyPulse.isPlaying && normalizedDistance <= 0.2f)
+            {
+                energyPulse.Stop();
+            }
         }
     }
 
+
     void UpdateBackgroundParticles()
     {
-        if (backgroundParticles != null)
+        if (backgroundParticles != null && otherPlayer != null)
         {
+            // Move the background particles forward
             Vector3 newPosition = backgroundParticles.transform.position;
             newPosition.z += currentForwardSpeed * Time.deltaTime;
             backgroundParticles.transform.position = newPosition;
+
+            // Calculate distance between players
+            float distance = Vector3.Distance(transform.position, otherPlayer.position);
+
+            // Normalize distance (0 when close, 1 when far)
+            float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
+
+            // Adjust background particle emission dynamically
+            var emission = backgroundParticles.emission;
+            float targetEmissionRate = Mathf.Lerp(maxBackgroundEmission, minBackgroundEmission, normalizedDistance);
+
+            // Smooth transition for better visual effect
+            emission.rateOverTime = Mathf.Lerp(emission.rateOverTime.constant, targetEmissionRate, Time.deltaTime * 5f);
+
+            var mainModule = backgroundParticles.main;
+            mainModule.startColor = Color.Lerp(Color.magenta, Color.black, normalizedDistance);
+
         }
     }
 

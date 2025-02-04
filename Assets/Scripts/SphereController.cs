@@ -36,7 +36,7 @@ public class SphereController : BaseCharacter
         float newWidth = Mathf.Lerp(0.1f, 0.5f, 1 - Mathf.InverseLerp(minDistance, maxDistance, distance));
         float opacity = Mathf.Lerp(1f, 0.2f, 1 - Mathf.InverseLerp(minDistance, maxDistance, distance));
 
-        Color baseColor = Color.yellow;
+        Color baseColor = Color.blue;
         Color fadedColor = new Color(baseColor.r, baseColor.g, baseColor.b, 0f);
 
         Gradient gradient = new Gradient();
@@ -46,7 +46,8 @@ public class SphereController : BaseCharacter
         );
 
         trailRenderer.startWidth = newWidth;
-        trailRenderer.endWidth = newWidth * 0.5f;
+        trailRenderer.endWidth = newWidth * 0.6f;
         trailRenderer.colorGradient = gradient;
+        trailRenderer.time = 1.5f; //set longer trail time for a more fluid effect
     }
 }
