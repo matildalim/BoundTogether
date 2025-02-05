@@ -1,6 +1,3 @@
-using System.Xml.Schema;
-using Unity.Hierarchy;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -25,10 +22,10 @@ public abstract class BaseCharacter : MonoBehaviour
     public ParticleSystem energyPulse;
 
     [Header("Background Effects")]
-    public ParticleSystem backgroundParticles;
+    public ParticleSystem blackBackgroundParticles;
+    public ParticleSystem coloredBackgroundParticles;
     public float maxBackgroundEmission = 50f;
     public float minBackgroundEmission = 5f;
-
 
     protected PlayerControls controls;
     protected Vector2 moveInput;
@@ -48,28 +45,21 @@ public abstract class BaseCharacter : MonoBehaviour
     {
         InitializePosition();
         currentForwardSpeed = forwardSpeed + Random.Range(-forwardSpeedVariation, forwardSpeedVariation);
-    
-        if (backgroundParticles != null)
-        {
-            backgroundParticles.Play();
-        }
-    
+
+        if (blackBackgroundParticles != null)
+            blackBackgroundParticles.Play();
     }
 
     protected virtual void InitializePosition()
     {
         if (transform.position == Vector3.zero)
-        {
             transform.position = GetDefaultPosition();
-        }
     }
 
     protected abstract Vector3 GetDefaultPosition();
 
     protected virtual void Update()
     {
-        //Debug.Log("BaseCharacter Update running on " + gameObject.name);
-
         AdjustForwardSpeed();
         HandleMovement();
         AdjustTrailEffect();
@@ -79,31 +69,15 @@ public abstract class BaseCharacter : MonoBehaviour
 
     protected virtual void HandleMovement()
     {
-        // Calculate base movement
         Vector3 inputMovement = new Vector3(moveInput.x * moveSpeed, 0f, 0f);
         Vector3 targetPosition = transform.position + inputMovement;
 
-        // Apply smoothing
-        Vector3 smoothedPosition = Vector3.SmoothDamp(
-            transform.position,
-            targetPosition,
-            ref velocity,
-            smoothTime
-        );
+        Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
 
-        // Handle automatic separation when not moving
         if (!isMoving)
-        {
-            Vector3 directionToMove = CalculateSeparationDirection();
-            smoothedPosition += directionToMove * moveSpeed * Time.deltaTime;
-        }
+            smoothedPosition += CalculateSeparationDirection() * moveSpeed * Time.deltaTime;
 
-        // Apply final position
-        transform.position = new Vector3(
-            smoothedPosition.x,
-            transform.position.y,
-            transform.position.z + (currentForwardSpeed * Time.deltaTime)
-        );
+        transform.position = new Vector3(smoothedPosition.x, transform.position.y, transform.position.z + (currentForwardSpeed * Time.deltaTime));
     }
 
     protected virtual Vector3 CalculateSeparationDirection()
@@ -116,120 +90,90 @@ public abstract class BaseCharacter : MonoBehaviour
         float distance = Vector3.Distance(transform.position, otherPlayer.position);
 
         if (distance > maxDistance)
-        {
             currentForwardSpeed += distanceSpeedMultiplier;
-        }
         else if (distance < minDistance)
-        {
             currentForwardSpeed -= distanceSpeedMultiplier;
-        }
 
-        currentForwardSpeed = Mathf.Clamp(
-            currentForwardSpeed,
-            forwardSpeed - forwardSpeedVariation,
-            forwardSpeed + forwardSpeedVariation
-        );
+        currentForwardSpeed = Mathf.Clamp(currentForwardSpeed, forwardSpeed - forwardSpeedVariation, forwardSpeed + forwardSpeedVariation);
     }
 
-    protected abstract void AdjustTrailEffect(); //making it abstract allows the subclass to define it
+    protected abstract void AdjustTrailEffect();
 
-    public void HandleProximityBubble()
+    public void HandleProximityBubble(bool forceActive = false)
     {
-        if (otherPlayer != null)
+        if (otherPlayer == null) return;
+
+        float distance = Vector3.Distance(transform.position, otherPlayer.position);
+        bool isWithinProximity = distance <= proximityRange;
+
+        if (isWithinProximity || forceActive)  // Ensure activation if forced
         {
-            float distance = Vector3.Distance(transform.position, otherPlayer.position);
-            bool isWithinProximity = distance <= proximityRange;
-
-            // Debug logs
-            Debug.Log("Distance: " + distance);
-            Debug.Log("Proximity range: " + proximityRange);
-            Debug.Log("Is within proximity: " + isWithinProximity);
-
-            if (isWithinProximity) //play or stop bubble within proximity
+            if (!proximityBubble.isPlaying)
             {
-                if (!proximityBubble.isPlaying)
-                {
-                    proximityBubble.Play(); // Show bubble
-                    TriggerEnergyPulse();
-
-                }
-
-                Vector3 midpoint = (transform.position + otherPlayer.position) / 2f; // update bubble position to be between the two objects
-                proximityBubble.transform.position = midpoint;
-
-                float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
-
-                float bubbleSize = Mathf.Lerp(1f, 5f, Mathf.PingPong(Time.time, 1));
-                //proximityBubble.transform.localScale = new Vector3(bubbleSize, bubbleSize, bubbleSize);
-
-                var mainModule = proximityBubble.main;
-                mainModule.startSize = bubbleSize;
-
-
-                var emission = proximityBubble.emission; //emission rate based on proximity
-                emission.rateOverTime = Mathf.Lerp(10, 0, normalizedDistance);
-            }
-            else if (!isWithinProximity && proximityBubble.isPlaying)
-            {
-                proximityBubble.Stop(); // Hide bubble
-                Debug.Log("Stopping proximity bubble.");
+                proximityBubble.Play();  // Corrected here
+                TriggerEnergyPulse();
             }
 
+            proximityBubble.transform.position = (transform.position + otherPlayer.position) / 2f;
+
+            float bubbleSize = Mathf.Lerp(1f, 5f, Mathf.PingPong(Time.time, 1));
+            var mainModule = proximityBubble.main;
+            mainModule.startSize = bubbleSize;
+
+            var emission = proximityBubble.emission;
+            emission.rateOverTime = Mathf.Lerp(10, 0, Mathf.InverseLerp(minDistance, proximityRange, distance));
+        }
+        else if (proximityBubble.isPlaying)
+        {
+            proximityBubble.Stop();  // Corrected here
         }
     }
 
     void TriggerEnergyPulse()
     {
-        if (energyPulse != null)
-        {
-            float distance = Vector3.Distance(transform.position, otherPlayer.position);
-            float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
+        if (energyPulse == null) return;
 
-            float pulseSize = Mathf.Lerp(0.5f, 2f, 1 - normalizedDistance);
-            float pulseOpacity = Mathf.Lerp(0.1f, 1f, 1 - normalizedDistance);
+        float distance = Vector3.Distance(transform.position, otherPlayer.position);
+        float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
 
-            var mainModule = energyPulse.main;
-            mainModule.startSize = pulseSize;
-            mainModule.startColor = new Color(1f, 0.5f, 0f, pulseOpacity);
+        float pulseSize = Mathf.Lerp(0.5f, 2f, 1 - normalizedDistance);
+        float pulseOpacity = Mathf.Lerp(0.1f, 1f, 1 - normalizedDistance);
 
-            if (!energyPulse.isPlaying && normalizedDistance > 0.2f)
-            {
-                energyPulse.Play();
-            }
-            else if (energyPulse.isPlaying && normalizedDistance <= 0.2f)
-            {
-                energyPulse.Stop();
-            }
-        }
+        var mainModule = energyPulse.main;
+        mainModule.startSize = pulseSize;
+        mainModule.startColor = new Color(1f, 0.5f, 0f, pulseOpacity);
+
+        if (!energyPulse.isPlaying && normalizedDistance > 0.2f)
+            energyPulse.Play();  // Corrected here
+        else if (energyPulse.isPlaying && normalizedDistance <= 0.2f)
+            energyPulse.Stop();  // Corrected here
     }
-
 
     void UpdateBackgroundParticles()
     {
-        if (backgroundParticles != null && otherPlayer != null)
-        {
-            // Move the background particles forward
-            Vector3 newPosition = backgroundParticles.transform.position;
-            newPosition.z += currentForwardSpeed * Time.deltaTime;
-            backgroundParticles.transform.position = newPosition;
+        if (blackBackgroundParticles != null)
+            MoveBackgroundParticles(blackBackgroundParticles);
 
-            // Calculate distance between players
-            float distance = Vector3.Distance(transform.position, otherPlayer.position);
+        if (coloredBackgroundParticles != null)
+            MoveBackgroundParticles(coloredBackgroundParticles);
+    }
 
-            // Normalize distance (0 when close, 1 when far)
-            float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
+    void MoveBackgroundParticles(ParticleSystem particles)
+    {
+        if (particles == null || otherPlayer == null) return;
 
-            // Adjust background particle emission dynamically
-            var emission = backgroundParticles.emission;
-            float targetEmissionRate = Mathf.Lerp(maxBackgroundEmission, minBackgroundEmission, normalizedDistance);
+        Vector3 newPosition = particles.transform.position;
+        newPosition.z += currentForwardSpeed * Time.deltaTime;
+        particles.transform.position = newPosition;
 
-            // Smooth transition for better visual effect
-            emission.rateOverTime = Mathf.Lerp(emission.rateOverTime.constant, targetEmissionRate, Time.deltaTime * 5f);
+        float distance = Vector3.Distance(transform.position, otherPlayer.position);
+        float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
 
-            var mainModule = backgroundParticles.main;
-            mainModule.startColor = Color.Lerp(Color.magenta, Color.black, normalizedDistance);
+        var emission = particles.emission;
+        emission.rateOverTime = Mathf.Max(10, Mathf.Lerp(maxBackgroundEmission, minBackgroundEmission, normalizedDistance));  // Ensure emission doesn't drop too low
 
-        }
+        var mainModule = particles.main;
+        mainModule.startColor = Color.Lerp(Color.magenta, Color.black, normalizedDistance);
     }
 
     protected virtual void OnEnable()
@@ -243,15 +187,11 @@ public abstract class BaseCharacter : MonoBehaviour
     }
 
     void OnDrawGizmos()
-    {   
+    {
         if (otherPlayer != null)
         {
-            //Gizmos.color = Color.yellow;
-            //Gizmos.DrawWireSphere(transform.position, maxDistance);
-            //Gizmos.color = Color.red;
-            //Gizmos.DrawWireSphere(transform.position, minDistance);
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(transform.position, proximityRange); // Debug proximity bubble
+            Gizmos.DrawWireSphere(transform.position, proximityRange);
         }
     }
 }

@@ -1,36 +1,38 @@
 using UnityEngine;
 
-
 public class MovingLines : MonoBehaviour
 {
-    public LineRenderer lineRenderer;  // LineRenderer component
-    public Transform cube;             // Reference to Cube
-    public Transform sphere;           // Reference to Sphere
+    public LineRenderer lineRenderer;
+    public Transform cube;
+    public Transform sphere;
 
-    public float lineThickness = 0.1f; // Line thickness
+    public float lineThickness = 0.1f;
+    public Color startColor = Color.blue;
+    public Color endColor = Color.green;
+    public float pulseSpeed = 1f;
 
     void Start()
     {
-        // Set the LineRenderer properties
-        lineRenderer.positionCount = 2;  // Only two points (Cube and Sphere)
+        lineRenderer.positionCount = 2;
         lineRenderer.startWidth = lineThickness;
         lineRenderer.endWidth = lineThickness;
-        lineRenderer.startColor = Color.blue;  // Start color of the line
-        lineRenderer.endColor = Color.green;   // End color of the line
+        lineRenderer.startColor = startColor;
+        lineRenderer.endColor = endColor;
     }
 
     void Update()
     {
-        // Update the positions of the line based on Cube and Sphere positions
-        if (lineRenderer != null)
+        if (lineRenderer != null && cube != null && sphere != null)
         {
-            lineRenderer.SetPosition(0, cube.position); // Start point: Cube position
-            lineRenderer.SetPosition(1, sphere.position); // End point: Sphere position
+            lineRenderer.SetPosition(0, cube.position);
+            lineRenderer.SetPosition(1, sphere.position);
         }
 
-        // Optional: Add pulse or animation to the line's width or color
-        float pulse = Mathf.PingPong(Time.time, 1f);
+        float pulse = Mathf.PingPong(Time.time * pulseSpeed, 1f);
         lineRenderer.startWidth = lineThickness + pulse * 0.1f;
         lineRenderer.endWidth = lineThickness + pulse * 0.1f;
+
+        lineRenderer.startColor = Color.Lerp(startColor, endColor, pulse);
+        lineRenderer.endColor = Color.Lerp(endColor, startColor, pulse);
     }
 }

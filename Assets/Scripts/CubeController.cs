@@ -23,7 +23,7 @@ public class CubeController : BaseCharacter
 
     protected override void AdjustTrailEffect()
     {
-        Debug.Log("AdjustTrailEffect running on " + gameObject.name);
+        //Debug.Log("AdjustTrailEffect running on " + gameObject.name);
 
         if (trailRenderer == null || otherPlayer == null)
         {

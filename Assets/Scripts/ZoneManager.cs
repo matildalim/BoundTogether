@@ -2,129 +2,123 @@ using UnityEngine;
 
 public class ZoneManager : MonoBehaviour
 {
-    public GameObject zone1Objects;  // Objects for Zone 1 (e.g., particles)
-    public GameObject zone2Objects;  // Objects for Zone 2 (e.g., geometric shapes)
-    public GameObject zone3Objects;  // Objects for Zone 3 (e.g., particles + geometric shapes)
+    public static ZoneManager Instance;
 
-    public float zoneDuration = 60f;  // Duration of each zone (1 minute)
+    public GameObject[] zones; // Array of zone GameObjects
+    public float zoneDuration = 15f; // Time before switching zones
     private float timer;
+    private int currentZoneIndex = 0; // Tracks which zone we're in
 
-    private bool isInZone1Active = true;
-    private bool isInZone2Active = false;
-    private bool isInZone3Active = false;
+    [Header("Zone Effects")]
+    public GameObject movingLines;
+    public TrailRenderer cubeTrailEffect;
+    public TrailRenderer sphereTrailEffect;
+    public ParticleSystem coloredBackgroundParticles;
+    public ParticleSystem proximityBubble;
+    public ParticleSystem proximityPulse;
 
-    private void Start()
+    void Awake()
     {
-        // Debug log for initial setup
-        Debug.Log("Start method called");
-
-        zone1Objects.SetActive(true);  // Enable Zone 1
-        zone2Objects.SetActive(false); // Disable Zone 2
-        zone3Objects.SetActive(false); // Disable Zone 3
-
-        Debug.Log("Zone 1 Active: " + zone1Objects.activeSelf);  // Check Zone 1 status
-        Debug.Log("Zone 2 Active: " + zone2Objects.activeSelf);  // Check Zone 2 status
-        Debug.Log("Zone 3 Active: " + zone3Objects.activeSelf);  // Check Zone 3 status
-
-        isInZone1Active = true;  // Ensure Zone 1 is active
-        timer = zoneDuration;     // Initialize the timer for Zone 1 duration
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
     }
 
-    private void Update()
+    void Start()
     {
-        if (isInZone1Active)
-        {
-            timer -= Time.deltaTime;  // Decrease the timer
+        ActivateZone(0); // Start with Zone 1
+        timer = zoneDuration;
+    }
 
-            // Check if the timer has finished and transition to Zone 2
-            if (timer <= 0)
-            {
-                TransitionToZone2();
-            }
+    void Update()
+    {
+        timer -= Time.deltaTime;
+
+        // Transition to the next zone when the timer runs out
+        if (timer <= 0 && currentZoneIndex < zones.Length - 1)
+        {
+            TransitionToNextZone();
         }
 
-        HandleCheatCodes();  // Cheat code to switch zones manually (if needed)
+        HandleCheatCodes(); // Allows manual zone transitions
     }
-    private void TransitionToZone2()
+
+    private void TransitionToNextZone()
     {
-        // Deactivate Zone 1 and activate Zone 2
-        isInZone1Active = false;
-        isInZone2Active = true;
-        zone1Objects.SetActive(false); // Disable Zone 1
-        zone2Objects.SetActive(true);  // Enable Zone 2
-
-        // Reset the timer for Zone 2
-        timer = zoneDuration;
+        currentZoneIndex++;
+        ActivateZone(currentZoneIndex);
+        timer = zoneDuration; // Reset timer
     }
 
-    private void TransitionToZone3()
+    private void ActivateZone(int index)
     {
-        // Deactivate Zone 2 and activate Zone 3
-        isInZone2Active = false;
-        isInZone3Active = true;
-        zone2Objects.SetActive(false); // Disable Zone 2
-        zone3Objects.SetActive(true);  // Enable Zone 3
+        // Deactivate all zones first
+        for (int i = 0; i < zones.Length; i++)
+        {
+            zones[i].SetActive(i == index); // Only activate the current zone
+        }
 
-        // Reset the timer for Zone 3
-        timer = zoneDuration;
+        ApplyZoneEffects(index);
+
+        Debug.Log("Transitioned to Zone " + (index + 1));
     }
+
+    private void ApplyZoneEffects(int zoneIndex)
+    {
+        // Reset all effects (to prevent unexpected behavior when switching zones)
+        movingLines.SetActive(false);
+        cubeTrailEffect.enabled = false;
+        sphereTrailEffect.enabled = false;
+        coloredBackgroundParticles.Stop();  
+        proximityBubble.Stop();             
+        proximityPulse.Stop();
+
+        // Apply effects incrementally
+        if (zoneIndex >= 1) movingLines.SetActive(true);  // Zone 1 effects: Moving lines
+        if (zoneIndex >= 2)
+        {
+            cubeTrailEffect.enabled = true;
+            sphereTrailEffect.enabled = true;  // Zone 2 effects: Cube & sphere trail
+        }
+        if (zoneIndex >= 3)
+        {
+            proximityBubble.gameObject.SetActive(true); // Ensure the parent is active
+            proximityBubble.Play();  // Play proximity bubble
+        }
+        if (zoneIndex >= 4)
+        {
+            // Assuming proximityBubble is the parent of proximityPulse
+            proximityBubble.gameObject.SetActive(true); // Ensure the parent is active
+            proximityBubble.Play();  // Play proximity bubble
+
+            proximityPulse.gameObject.SetActive(true); // Ensure proximity pulse's parent is active
+            proximityPulse.Play();  // Play proximity pulse
+
+
+            coloredBackgroundParticles.gameObject.SetActive(true); // Ensure proximity pulse's parent is active
+            coloredBackgroundParticles.Play();  // Play proximity pulse
+
+
+        }
+    }
+
 
     private void HandleCheatCodes()
     {
-        // Example of cheat codes using input keys to transition between zones
-        if (Input.GetKeyDown(KeyCode.Alpha1)) // Press '1' to go to Zone 1
-        {
-            GoToZone1();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) // Press '2' to go to Zone 2
-        {
-            GoToZone2();
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) // Press '3' to go to Zone 3
-        {
-            GoToZone3();
-        }
+        if (Input.GetKeyDown(KeyCode.Alpha1)) SetZone(0);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) SetZone(1);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) SetZone(2);
+        if (Input.GetKeyDown(KeyCode.Alpha4)) SetZone(3);
     }
 
-    private void GoToZone1()
+    private void SetZone(int index)
     {
-        // Manually switch to Zone 1
-        isInZone1Active = true;
-        isInZone2Active = false;
-        isInZone3Active = false;
-        zone1Objects.SetActive(true);
-        zone2Objects.SetActive(false);
-        zone3Objects.SetActive(false);
-
-        // Reset the timer for Zone 1
-        timer = zoneDuration;
-    }
-
-    private void GoToZone2()
-    {
-        // Manually switch to Zone 2
-        isInZone1Active = false;
-        isInZone2Active = true;
-        isInZone3Active = false;
-        zone1Objects.SetActive(false);
-        zone2Objects.SetActive(true);
-        zone3Objects.SetActive(false);
-
-        // Reset the timer for Zone 2
-        timer = zoneDuration;
-    }
-
-    private void GoToZone3()
-    {
-        // Manually switch to Zone 3
-        isInZone1Active = false;
-        isInZone2Active = false;
-        isInZone3Active = true;
-        zone1Objects.SetActive(false);
-        zone2Objects.SetActive(false);
-        zone3Objects.SetActive(true);
-
-        // Reset the timer for Zone 3
-        timer = zoneDuration;
+        if (index >= 0 && index < zones.Length)
+        {
+            currentZoneIndex = index;
+            ActivateZone(index);
+            timer = zoneDuration; // Reset timer on manual transition
+        }
     }
 }

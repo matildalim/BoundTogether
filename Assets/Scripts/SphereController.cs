@@ -24,7 +24,7 @@ public class SphereController : BaseCharacter
 
     protected override void AdjustTrailEffect()
     {
-        Debug.Log("AdjustTrailEffect running on " + gameObject.name);
+        //Debug.Log("AdjustTrailEffect running on " + gameObject.name);
 
         if (trailRenderer == null || otherPlayer == null)
         {
