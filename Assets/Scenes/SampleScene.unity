@@ -1731,7 +1731,7 @@ GameObject:
   - component: {fileID: 1410098154}
   - component: {fileID: 1410098153}
   m_Layer: 0
-  m_Name: Particle System
+  m_Name: ProximityPulse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1836,7 +1836,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1410098151}
   serializedVersion: 8
-  lengthInSec: 1
+  lengthInSec: 999
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -11675,7 +11675,7 @@ GameObject:
   - component: {fileID: 1824327253}
   - component: {fileID: 1824327252}
   m_Layer: 0
-  m_Name: Particle System
+  m_Name: ProximityBubble
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

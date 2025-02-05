@@ -107,17 +107,28 @@ public class ZoneManager : MonoBehaviour
                 zone4CubeTrailEffect.enabled = true;
                 zone4SphereTrailEffect.enabled = true;
                 zone4ProximityBubble.Play();
-                zone4ProximityPulse.Play();
+                //zone4ProximityPulse.Play();
                 break;
+
             case 4:
                 zone5MovingLines.SetActive(true);
                 zone5CubeTrailEffect.enabled = true;
                 zone5SphereTrailEffect.enabled = true;
+                Debug.Log("Playing zone5ProximityBubble");
+                //zone5ProximityBubble.Play(true);
+
+                // Ensure zone5ProximityBubble plays when Zone 5 is activated
+                if (zone5ProximityBubble != null && zone5ProximityBubble.isPlaying)
+                {
+                    zone5ProximityBubble.Play(true);
+                }
+
+                //Debug.Log("Playing zone5ProximityPulse");
+                //zone5ProximityPulse.Play(true);
                 zone5ColoredBackgroundParticles.Play();
-                zone5ProximityBubble.Play();
-                zone5ProximityPulse.Play();
                 break;
         }
+
     }
 
     private void ResetEffects()
@@ -140,7 +151,6 @@ public class ZoneManager : MonoBehaviour
         zone5ColoredBackgroundParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         zone5ProximityBubble.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         zone5ProximityPulse.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-
     }
 
     private void HandleCheatCodes()
