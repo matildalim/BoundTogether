@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ZoneManager : MonoBehaviour
@@ -9,13 +10,28 @@ public class ZoneManager : MonoBehaviour
     private float timer;
     private int currentZoneIndex = 0; // Tracks which zone we're in
 
-    [Header("Zone Effects")]
-    public GameObject movingLines;
-    public TrailRenderer cubeTrailEffect;
-    public TrailRenderer sphereTrailEffect;
-    public ParticleSystem coloredBackgroundParticles;
-    public ParticleSystem proximityBubble;
-    public ParticleSystem proximityPulse;
+    [Header("Zone Effects 2")]
+    public GameObject zone2MovingLines;
+
+    [Header("Zone Effects 3")]
+    public GameObject zone3MovingLines;
+    public TrailRenderer zone3CubeTrailEffect;
+    public TrailRenderer zone3SphereTrailEffect;
+
+    [Header("Zone Effects 4")]
+    public GameObject zone4MovingLines;
+    public TrailRenderer zone4CubeTrailEffect;
+    public TrailRenderer zone4SphereTrailEffect;
+    public ParticleSystem zone4ProximityBubble;
+    public ParticleSystem zone4ProximityPulse;
+
+    [Header("Zone Effects 5")]
+    public GameObject zone5MovingLines;
+    public TrailRenderer zone5CubeTrailEffect;
+    public TrailRenderer zone5SphereTrailEffect;
+    public ParticleSystem zone5ProximityBubble;
+    public ParticleSystem zone5ProximityPulse;
+    public ParticleSystem zone5ColoredBackgroundParticles;
 
     void Awake()
     {
@@ -46,63 +62,86 @@ public class ZoneManager : MonoBehaviour
 
     private void TransitionToNextZone()
     {
-        currentZoneIndex++;
-        ActivateZone(currentZoneIndex);
-        timer = zoneDuration; // Reset timer
+        if (currentZoneIndex < 4)  // Adjusted since Zone 6 is removed
+        {
+            currentZoneIndex++;
+            ActivateZone(currentZoneIndex);
+            timer = zoneDuration; // Reset timer
+        }
+        else
+        {
+            Debug.Log("Already at the last zone, cannot transition further.");
+        }
     }
 
     private void ActivateZone(int index)
     {
-        // Deactivate all zones first
         for (int i = 0; i < zones.Length; i++)
         {
-            zones[i].SetActive(i == index); // Only activate the current zone
+            zones[i].SetActive(i == index);
         }
 
         ApplyZoneEffects(index);
-
         Debug.Log("Transitioned to Zone " + (index + 1));
     }
 
     private void ApplyZoneEffects(int zoneIndex)
     {
-        // Reset all effects (to prevent unexpected behavior when switching zones)
-        movingLines.SetActive(false);
-        cubeTrailEffect.enabled = false;
-        sphereTrailEffect.enabled = false;
-        coloredBackgroundParticles.Stop();  
-        proximityBubble.Stop();             
-        proximityPulse.Stop();
+        Debug.Log("ApplyZoneEffects called for Zone: " + zoneIndex);
+        ResetEffects();
 
-        // Apply effects incrementally
-        if (zoneIndex >= 1) movingLines.SetActive(true);  // Zone 1 effects: Moving lines
-        if (zoneIndex >= 2)
+        switch (zoneIndex)
         {
-            cubeTrailEffect.enabled = true;
-            sphereTrailEffect.enabled = true;  // Zone 2 effects: Cube & sphere trail
-        }
-        if (zoneIndex >= 3)
-        {
-            proximityBubble.gameObject.SetActive(true); // Ensure the parent is active
-            proximityBubble.Play();  // Play proximity bubble
-        }
-        if (zoneIndex >= 4)
-        {
-            // Assuming proximityBubble is the parent of proximityPulse
-            proximityBubble.gameObject.SetActive(true); // Ensure the parent is active
-            proximityBubble.Play();  // Play proximity bubble
-
-            proximityPulse.gameObject.SetActive(true); // Ensure proximity pulse's parent is active
-            proximityPulse.Play();  // Play proximity pulse
-
-
-            coloredBackgroundParticles.gameObject.SetActive(true); // Ensure proximity pulse's parent is active
-            coloredBackgroundParticles.Play();  // Play proximity pulse
-
-
+            case 0:
+                break;
+            case 1:
+                zone2MovingLines.SetActive(true);
+                break;
+            case 2:
+                zone3MovingLines.SetActive(true);
+                zone3CubeTrailEffect.enabled = true;
+                zone3SphereTrailEffect.enabled = true;
+                break;
+            case 3:
+                zone4MovingLines.SetActive(true);
+                zone4CubeTrailEffect.enabled = true;
+                zone4SphereTrailEffect.enabled = true;
+                zone4ProximityBubble.Play();
+                zone4ProximityPulse.Play();
+                break;
+            case 4:
+                zone5MovingLines.SetActive(true);
+                zone5CubeTrailEffect.enabled = true;
+                zone5SphereTrailEffect.enabled = true;
+                zone5ColoredBackgroundParticles.Play();
+                zone5ProximityBubble.Play();
+                zone5ProximityPulse.Play();
+                break;
         }
     }
 
+    private void ResetEffects()
+    {
+        zone2MovingLines.SetActive(false);
+
+        zone3MovingLines.SetActive(false);
+        zone3CubeTrailEffect.enabled = false;
+        zone3SphereTrailEffect.enabled = false;
+
+        zone4MovingLines.SetActive(false);
+        zone4CubeTrailEffect.enabled = false;
+        zone4SphereTrailEffect.enabled = false;
+        zone4ProximityBubble.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        zone4ProximityPulse.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        zone5MovingLines.SetActive(false);
+        zone5CubeTrailEffect.enabled = false;
+        zone5SphereTrailEffect.enabled = false;
+        zone5ColoredBackgroundParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        zone5ProximityBubble.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        zone5ProximityPulse.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+    }
 
     private void HandleCheatCodes()
     {
@@ -110,6 +149,7 @@ public class ZoneManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2)) SetZone(1);
         if (Input.GetKeyDown(KeyCode.Alpha3)) SetZone(2);
         if (Input.GetKeyDown(KeyCode.Alpha4)) SetZone(3);
+        if (Input.GetKeyDown(KeyCode.Alpha5)) SetZone(4);
     }
 
     private void SetZone(int index)
@@ -118,7 +158,7 @@ public class ZoneManager : MonoBehaviour
         {
             currentZoneIndex = index;
             ActivateZone(index);
-            timer = zoneDuration; // Reset timer on manual transition
+            timer = zoneDuration;
         }
     }
 }
