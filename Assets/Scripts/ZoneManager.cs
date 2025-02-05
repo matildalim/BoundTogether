@@ -62,7 +62,7 @@ public class ZoneManager : MonoBehaviour
 
     private void TransitionToNextZone()
     {
-        if (currentZoneIndex < 4)  // Adjusted since Zone 6 is removed
+        if (currentZoneIndex < 5)  // Adjusted since Zone 6 is removed
         {
             currentZoneIndex++;
             ActivateZone(currentZoneIndex);
@@ -74,7 +74,7 @@ public class ZoneManager : MonoBehaviour
         }
     }
 
-    private void ActivateZone(int index)
+    private void ActivateZone(int index)    
     {
         for (int i = 0; i < zones.Length; i++)
         {
@@ -115,20 +115,11 @@ public class ZoneManager : MonoBehaviour
                 zone5CubeTrailEffect.enabled = true;
                 zone5SphereTrailEffect.enabled = true;
                 Debug.Log("Playing zone5ProximityBubble");
-                //zone5ProximityBubble.Play(true);
-
-                // Ensure zone5ProximityBubble plays when Zone 5 is activated
-                if (zone5ProximityBubble != null && zone5ProximityBubble.isPlaying)
-                {
-                    zone5ProximityBubble.Play(true);
-                }
-
-                //Debug.Log("Playing zone5ProximityPulse");
-                //zone5ProximityPulse.Play(true);
+                zone5ProximityBubble.Play();
+                //zone5ProximityPulse.Play(true)
                 zone5ColoredBackgroundParticles.Play();
                 break;
         }
-
     }
 
     private void ResetEffects()
