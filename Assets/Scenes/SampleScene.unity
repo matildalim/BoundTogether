@@ -226,8 +226,9 @@ MonoBehaviour:
   sphere: {fileID: 373525997}
   lineThickness: 0.1
   startColor: {r: 0, g: 0, b: 1, a: 1}
-  endColor: {r: 0, g: 1, b: 0, a: 1}
+  endColor: {r: 1, g: 0.69625795, b: 0, a: 1}
   pulseSpeed: 1
+  colorChangeTimer: 10
 --- !u!120 &107648981
 LineRenderer:
   serializedVersion: 2
@@ -660,8 +661,9 @@ MonoBehaviour:
   sphere: {fileID: 373525997}
   lineThickness: 0.1
   startColor: {r: 0, g: 0, b: 1, a: 1}
-  endColor: {r: 0, g: 1, b: 0, a: 1}
-  pulseSpeed: 1
+  endColor: {r: 1, g: 0.49034947, b: 0, a: 1}
+  pulseSpeed: 2
+  colorChangeTimer: 5
 --- !u!120 &381975778
 LineRenderer:
   serializedVersion: 2
@@ -818,8 +820,9 @@ MonoBehaviour:
   sphere: {fileID: 373525997}
   lineThickness: 0.1
   startColor: {r: 0, g: 0, b: 1, a: 1}
-  endColor: {r: 0, g: 1, b: 0, a: 1}
+  endColor: {r: 1, g: 0.7201682, b: 0, a: 1}
   pulseSpeed: 1
+  colorChangeTimer: 10
 --- !u!120 &451193488
 LineRenderer:
   serializedVersion: 2
@@ -6692,8 +6695,9 @@ MonoBehaviour:
   sphere: {fileID: 373525997}
   lineThickness: 0.1
   startColor: {r: 0, g: 0, b: 1, a: 1}
-  endColor: {r: 0, g: 1, b: 0, a: 1}
+  endColor: {r: 1, g: 0.7030741, b: 0, a: 1}
   pulseSpeed: 1
+  colorChangeTimer: 10
 --- !u!120 &1501780034
 LineRenderer:
   serializedVersion: 2
@@ -11680,7 +11684,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1824327251
 Transform:
   m_ObjectHideFlags: 0
