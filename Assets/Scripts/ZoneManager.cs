@@ -30,16 +30,11 @@ public class ZoneManager : MonoBehaviour
     public GameObject zone5MovingLines;
     public TrailRenderer zone5CubeTrailEffect;
     public TrailRenderer zone5SphereTrailEffect;
-    public ParticleSystem zone5ProximityBubble;
-    public ParticleSystem zone5ProximityPulse;
+    //public ParticleSystem zone5ProximityBubble;
+    //public ParticleSystem zone5ProximityPulse;
     public ParticleSystem zone5ColoredBackgroundParticles;
 
-    [Header("Zone Effects 6")]
-    public GameObject zone6MovingLines;
-    public TrailRenderer zone6CubeTrailEffect;
-    public TrailRenderer zone6SphereTrailEffect;
-
-    public float moveSpeed = 5f;
+    //public float moveSpeed = 5f;
 
     void Awake()
     {
@@ -51,6 +46,7 @@ public class ZoneManager : MonoBehaviour
 
     void Start()
     {
+
         ActivateZone(0); // Start with Zone 1
         timer = zoneDuration;
     }
@@ -128,15 +124,12 @@ public class ZoneManager : MonoBehaviour
                 zone5CubeTrailEffect.enabled = true;
                 zone5SphereTrailEffect.enabled = true;
                 Debug.Log("Playing zone5ProximityBubble");
-                zone5ProximityBubble.Play();
+                //zone5ProximityBubble.Play();
                 //zone5ProximityPulse.Play(true)
                 zone5ColoredBackgroundParticles.Play();
                 break;
-            case 5:
-                zone6MovingLines.SetActive(true);
-                zone6CubeTrailEffect.enabled = true;
-                zone6SphereTrailEffect.enabled = true;
-                break;
+
+
         }
     }
 
@@ -158,12 +151,8 @@ public class ZoneManager : MonoBehaviour
         zone5CubeTrailEffect.enabled = false;
         zone5SphereTrailEffect.enabled = false;
         zone5ColoredBackgroundParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        zone5ProximityBubble.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        zone5ProximityPulse.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-
-        zone6MovingLines.SetActive(false);
-        zone6CubeTrailEffect.enabled = false;
-        zone6SphereTrailEffect.enabled = false;
+        //zone5ProximityBubble.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        //zone5ProximityPulse.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     private void HandleCheatCodes()
@@ -173,7 +162,6 @@ public class ZoneManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3)) SetZone(2);
         if (Input.GetKeyDown(KeyCode.Alpha4)) SetZone(3);
         if (Input.GetKeyDown(KeyCode.Alpha5)) SetZone(4);
-        if (Input.GetKeyDown(KeyCode.Alpha6)) SetZone(5);
     }
 
     private void SetZone(int index)
