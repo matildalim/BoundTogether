@@ -27,9 +27,6 @@ public abstract class BaseCharacter : MonoBehaviour
     public float maxBackgroundEmission = 50f;
     public float minBackgroundEmission = 5f;
 
-    [Header("Orbiting Circle")]
-    public OrbitingCircle orbitingCircle;
-
     protected PlayerControls controls;
     protected Vector2 moveInput;
     protected Vector3 velocity;
@@ -68,9 +65,6 @@ public abstract class BaseCharacter : MonoBehaviour
         AdjustTrailEffect();
         HandleProximityBubble();
         UpdateBackgroundParticles();
-
-        if (orbitingCircle != null)
-            orbitingCircle.SetMoveSpeed(currentForwardSpeed);
     }
 
     protected virtual void HandleMovement()

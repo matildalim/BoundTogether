@@ -38,9 +38,6 @@ public class ZoneManager : MonoBehaviour
     public GameObject zone6MovingLines;
     public TrailRenderer zone6CubeTrailEffect;
     public TrailRenderer zone6SphereTrailEffect;
-    public OrbitingCircle orbitingCircleScript; // Reference to the OrbitingCircle script
-    public ParticleSystem zone6OrbitingCircle;
-    public ParticleSystem zone6BackgroundParticles;
 
     public float moveSpeed = 5f;
 
@@ -69,57 +66,7 @@ public class ZoneManager : MonoBehaviour
         }
 
         HandleCheatCodes(); // Allows manual zone transitions
-
-        // Ensure the Orbiting Circle effect is running in Zone 6
-        if (currentZoneIndex == 5 && orbitingCircleScript != null)
-        {
-            orbitingCircleScript.gameObject.SetActive(true);
-        }
-        moveZoneEffectsForward(moveSpeed);
     }
-
-    void moveZoneEffectsForward(float moveSpeed)
-    {
-
-        // Ensure the orbiting circle continues to play (it may not need positional adjustment)
-        if (zone6OrbitingCircle != null && !zone6OrbitingCircle.isPlaying)
-        {
-            zone6OrbitingCircle.Play(true);
-        }
-
-        // Move the background particles forward (if they have a transform component)
-        if (zone6BackgroundParticles != null)
-        {
-            var particleTransform = zone6BackgroundParticles.transform;
-            particleTransform.position += Vector3.forward * moveSpeed * Time.deltaTime;
-            if (!zone6BackgroundParticles.isPlaying)
-            {
-                zone6BackgroundParticles.Play();
-            }
-        }
-    }
-
-
-
-    //private void TransitionToNextZone()
-    //{
-    //    if (currentZoneIndex < 6)  // Adjusted since Zone 6 is removed
-    //    {
-    //        currentZoneIndex++;
-    //        ActivateZone(currentZoneIndex);
-    //        timer = zoneDuration; // Reset timer
-    //    }
-    //    else if (currentZoneIndex == 4)
-    //    {
-    //        currentZoneIndex = 5; // Manually set to Zone 6
-    //        ActivateZone(currentZoneIndex); // Activate Zone 6
-    //        timer = zoneDuration; // Reset timer
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("Already at the last zone, cannot transition further.");
-    //    }
-    //}
 
     private void TransitionToNextZone()
     {
@@ -189,11 +136,6 @@ public class ZoneManager : MonoBehaviour
                 zone6MovingLines.SetActive(true);
                 zone6CubeTrailEffect.enabled = true;
                 zone6SphereTrailEffect.enabled = true;
-                zone6OrbitingCircle.Play(true);
-                //Debug.Log("Playing zone5ProximityBubble");
-                //zone5ProximityBubble.Play();
-                //zone5ProximityPulse.Play(true)
-                zone6BackgroundParticles.Play();
                 break;
         }
     }
@@ -222,10 +164,6 @@ public class ZoneManager : MonoBehaviour
         zone6MovingLines.SetActive(false);
         zone6CubeTrailEffect.enabled = false;
         zone6SphereTrailEffect.enabled = false;
-        zone6BackgroundParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        zone6OrbitingCircle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        //zone6ProximityBubble.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        //zone6ProximityPulse.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     private void HandleCheatCodes()
