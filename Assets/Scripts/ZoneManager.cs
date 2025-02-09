@@ -177,7 +177,6 @@ public class ZoneManager : MonoBehaviour
         }
 
         Color baseColor = Color.yellow;
-
         Color fadedColor = new Color(baseColor.r, baseColor.g, baseColor.b, 0f);
 
         Gradient gradient = new Gradient();
@@ -190,6 +189,7 @@ public class ZoneManager : MonoBehaviour
         //trailRenderer.endWidth = newWidth * 0.5f; // Keep the end width smaller for a rigid effect
         trailRenderer.colorGradient = gradient;
     }
+
 
     public void HandleProximityBubble(bool forceActive = false)
     {
@@ -242,7 +242,7 @@ public class ZoneManager : MonoBehaviour
         var pulse = zoneEffects[currentZoneIndex].energyPulse;
         var mainModule = pulse.main;
         mainModule.startSize = Mathf.Lerp(0.5f, 2f, 1 - normalizedDistance);
-        mainModule.startColor = new Color(1f, 0.5f, 0f, Mathf.Lerp(0.1f, 1f, 1 - normalizedDistance));
+        mainModule.startColor = new Color(0f, 1f, 0f, Mathf.Lerp(0.1f, 1f, 1 - normalizedDistance));
 
         if (!pulse.isPlaying && normalizedDistance > 0.2f)
             pulse.Play();
