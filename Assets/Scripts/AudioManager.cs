@@ -4,8 +4,9 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    public AudioClip bgmTrack; // Single BGM track for the entire game
-    private AudioSource audioSource; // The AudioSource to play the BGM
+    public AudioClip bgmTrack;
+    private AudioSource audioSource;
+    private bool isPlaying = false;
 
     void Awake()
     {
@@ -14,28 +15,26 @@ public class AudioManager : MonoBehaviour
         else
             Destroy(gameObject);
 
-        audioSource = GetComponent<AudioSource>(); // Get the AudioSource component
-    }
-
-    void Start()
-    {
-        PlayBGM(); // Play the BGM when the game starts
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void PlayBGM()
     {
-        if (!audioSource.isPlaying)
+        if (!isPlaying)
         {
             audioSource.clip = bgmTrack;
-            audioSource.loop = true; // Loop the BGM for the whole game
+            audioSource.loop = true;
             audioSource.Play();
-            Debug.Log("Playing background music.");
+            isPlaying = true;
         }
     }
 
     public void StopBGM()
     {
-        audioSource.Stop();
-        Debug.Log("BGM Stopped.");
+        if (isPlaying)
+        {
+            audioSource.Stop();
+            isPlaying = false;
+        }
     }
 }

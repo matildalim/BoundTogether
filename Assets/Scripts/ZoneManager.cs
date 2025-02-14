@@ -13,6 +13,7 @@ public class ZoneManager : MonoBehaviour
     private float timer;
     private int currentZoneIndex = 0;
     private bool isZone6 = false;
+    private bool gameStarted = false;
 
 
     [System.Serializable]
@@ -58,8 +59,6 @@ public class ZoneManager : MonoBehaviour
 
     void Start()
     {
-        ActivateZone(0);
-        timer = zoneDuration;
     }
 
     void Update()
@@ -76,6 +75,18 @@ public class ZoneManager : MonoBehaviour
         HandleCheatCodes(); // Allows manual zone transitions
 
         if (isZone6) HandleFloatingBubbles();
+
+    }
+
+    public void StartGame()
+    {
+        if (!gameStarted)
+        {
+            gameStarted = true;
+            ActivateZone(0);
+            timer = zoneDuration;
+            AudioManager.Instance.PlayBGM();
+        }
     }
 
     private void TransitionToNextZone()
@@ -507,4 +518,5 @@ public class ZoneManager : MonoBehaviour
         }
     }
 
-}
+
+}  
