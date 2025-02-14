@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Xml.Serialization;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 
@@ -245,26 +246,52 @@ public class ZoneManager : MonoBehaviour
             if (effects.proximityBubble == null) return;
 
             if (isWithinProximity || forceActive)
-            {
+            {   
                 if (!effects.proximityBubble.isPlaying)
                 {
                     effects.proximityBubble.Play();
                     TriggerEnergyPulse();
                 }
 
-                //transform.position functions of particle system
+                ////transform.position functions of particle system
                 Camera mainCamera = Camera.main;
                 Vector3 bubblePosition = (player1.position + otherPlayer.position) / 2f;
                 bubblePosition.z = mainCamera.transform.position.z + 12f;
                 effects.proximityBubble.transform.position = bubblePosition;
-                //effects.proximityBubble.transform.position = (player1.position + otherPlayer.position) / 2f;
 
-                float bubbleSize = Mathf.Lerp(1f, 5f, Mathf.PingPong(Time.time, 1));
-                var mainModule = effects.proximityBubble.main;
-                mainModule.startSize = bubbleSize;
+                float floatOffset = Mathf.Sin(Time.time * 2f) * 0.5f; // More dynamic up-down movement
+                bubblePosition.y += floatOffset;
 
+                //Smoothly Move Bubble Towards Target Position
+                effects.proximityBubble.transform.position = Vector3.Lerp(
+                    effects.proximityBubble.transform.position,
+                    bubblePosition,
+                    Time.deltaTime * 3f // Smooth movement speed
+                );
+
+                //Adjust Bubble Size Based on Distance Between Cube & Sphere
+                float distance = Vector3.Distance(player1.position, otherPlayer.position);
+                float sizeFactor = Mathf.Lerp(1f, 3f, 1 - Mathf.InverseLerp(minDistance, proximityRange, distance));
+
+                effects.proximityBubble.transform.localScale = new Vector3(sizeFactor, sizeFactor, sizeFactor);
+
+                //Dynamic Bubble Opacity (Fades in When Close)
+                float targetAlpha = Mathf.Lerp(0.3f, 1f, 1 - Mathf.InverseLerp(minDistance, proximityRange, distance));
+                StartCoroutine(FadeBubble(effects.proximityBubble, targetAlpha, false));
+
+                // **Adjust Particle Emission Rate Based on Distance
                 var emission = effects.proximityBubble.emission;
-                emission.rateOverTime = Mathf.Lerp(10, 0, Mathf.InverseLerp(playerCharacter.minDistance, playerCharacter.proximityRange, Vector3.Distance(player1.position, otherPlayer.position)));
+                emission.rateOverTime = Mathf.Lerp(5, 25, 1 - Mathf.InverseLerp(minDistance, proximityRange, distance));
+
+                //trigger fadeout when distance exceeds proximity range
+                if (distance >= proximityRange * 1.1f)
+                {
+                    StartCoroutine(FadeBubble(effects.proximityBubble, 0f, true));
+                }
+                else if (!effects.proximityBubble.isPlaying)
+                {
+                    effects.proximityBubble.Play();
+                }
             }
             else if (effects.proximityBubble.isPlaying)
             {
@@ -272,6 +299,56 @@ public class ZoneManager : MonoBehaviour
             }
         }
     }
+
+    //private IEnumerator FadeBubble(ParticleSystem bubble, float targetAlpha)
+    //{
+    //    var mainModule = bubble.main;
+    //    float startAlpha = mainModule.startColor.color.a;
+    //    float elapsedTime = 0f;
+    //    float fadeSpeed = 2.0f;
+
+    //    while (elapsedTime < fadeSpeed)
+    //    {
+    //        elapsedTime += Time.deltaTime;
+    //        Color color = mainModule.startColor.color;
+    //        color.a = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / fadeSpeed);
+    //        mainModule.startColor = color;
+    //        yield return null;
+    //    }
+    //}
+
+    private IEnumerator FadeBubble(ParticleSystem bubble, float targetAlpha, bool fadeOut)
+    {
+        float startAlpha = bubble.main.startColor.color.a;
+        float elapsedTime = 0f;
+        float fadeSpeed = 2.0f;
+
+        var mainModule = bubble.main;
+        Color bubbleColor = mainModule.startColor.color;
+
+        while (elapsedTime < fadeSpeed)
+        {
+            elapsedTime += Time.deltaTime;
+            bubbleColor.a = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / fadeSpeed);
+            mainModule.startColor = new ParticleSystem.MinMaxGradient(bubbleColor);
+
+            // Shrink bubble if it's fading out
+            if (fadeOut)
+            {
+                float scaleFactor = Mathf.Lerp(bubble.transform.localScale.x, 0f, elapsedTime / fadeSpeed);
+                bubble.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
+
+            yield return null;
+        }
+
+        // Fully hide the bubble if faded out
+        if (fadeOut)
+        {
+            bubble.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+    }
+
 
     private void TriggerEnergyPulse()
     {
@@ -302,70 +379,6 @@ public class ZoneManager : MonoBehaviour
             MoveColoredBackgroundParticles(effects.coloredBackgroundParticles);
     }
 
-    //private void MoveBackgroundParticles(ParticleSystem particles)
-    //{
-    //    if (particles == null || otherPlayer == null) return;
-
-    //    // Keep particles at a fixed distance in front of the camera
-    //    Camera mainCamera = Camera.main;
-    //    Vector3 newPosition = (player1.position + otherPlayer.position) / 2f;
-    //    newPosition.z = mainCamera.transform.position.z + 30f; //offset from camera
-
-    //    particles.transform.position = newPosition;
-
-    //    float distance = Vector3.Distance(player1.position, otherPlayer.position);
-    //    float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
-
-    //    var emission = particles.emission;
-    //    emission.rateOverTime = Mathf.Max(10, Mathf.Lerp(maxBackgroundEmission, minBackgroundEmission, normalizedDistance));
-
-
-    //    var mainModule = particles.main;
-    //    mainModule.startColor = Color.Lerp(Color.magenta, Color.black, normalizedDistance);
-    //}
-
-    //private void MoveColoredBackgroundParticles(ParticleSystem particles)
-    //{
-    //    if (particles == null || otherPlayer == null) return;
-
-    //    // Keep particles at a fixed distance in front of the camera
-    //    Camera mainCamera = Camera.main;
-    //    Vector3 newPosition = (player1.position + otherPlayer.position) / 2f;
-    //    newPosition.z = mainCamera.transform.position.z + 30f; // Offset from camera
-
-    //    particles.transform.position = newPosition;
-
-    //    float distance = Vector3.Distance(player1.position, otherPlayer.position);
-    //    float normalizedDistance = Mathf.InverseLerp(minDistance, proximityRange, distance);
-
-    //    // Adjust emission rate based on distance
-    //    var emission = particles.emission;
-    //    emission.rateOverTime = Mathf.Max(5, Mathf.Lerp(maxBackgroundEmission, minBackgroundEmission, Mathf.Pow(normalizedDistance, 2f)));
-
-    //    // Adjust color
-    //    var mainModule = particles.main;
-    //    mainModule.startColor = Color.Lerp(Color.yellow, Color.blue, normalizedDistance);
-
-    //    // Adjust lifetime to keep them visible longer
-    //    mainModule.startLifetime = Mathf.Lerp(10f, 20f, normalizedDistance); // Longer lasting particles
-
-    //    // Make sure particles don't move with velocity
-    //    var velocity = particles.velocityOverLifetime;
-    //    velocity.enabled = false;
-
-    //    // Spread particles across the world
-    //    var shape = particles.shape;
-    //    shape.enabled = true;
-    //    shape.shapeType = ParticleSystemShapeType.Box; // Or use Sphere for a more radial effect
-    //    shape.scale = new Vector3(50f, 50f, 50f); // Adjust to match world size
-
-    //    // Add a slow pulsing movement
-    //    var noise = particles.noise;
-    //    noise.enabled = true;
-    //    noise.strength = 2f; // Controls how much they move
-    //    noise.frequency = 0.1f; // Slow movement
-    //    noise.scrollSpeed = 0.02f; // Controls pulsing effect
-    //}
 
     private void MoveBackgroundParticles(ParticleSystem particles)
     {
@@ -464,7 +477,7 @@ public class ZoneManager : MonoBehaviour
 
         // Adjust bubble sizes dynamically
         float distance = Vector3.Distance(player1.position, player2.position);
-        float sizeFactor = Mathf.Lerp(2f, 5f, Mathf.InverseLerp(minDistance, proximityRange, distance));
+        float sizeFactor = Mathf.Lerp(1f, 2.5f, Mathf.InverseLerp(minDistance, proximityRange, distance));
 
         bubbleCube.transform.localScale = new Vector3(sizeFactor, sizeFactor, sizeFactor);
         bubbleSphere.transform.localScale = new Vector3(sizeFactor, sizeFactor, sizeFactor);

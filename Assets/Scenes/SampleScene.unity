@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 68136517}
   - component: {fileID: 68136516}
   m_Layer: 0
-  m_Name: Sphere (1)
+  m_Name: Bubble2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,7 +196,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 42320658a246a5a43b10556216f6c42b, type: 2}
+  - {fileID: 2100000, guid: 19c59a24b6829564db92d703d8b06d6d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -631,7 +631,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4aa40db3f33c9c64fa1dad9d388e13b1, type: 2}
+  - {fileID: 2100000, guid: 176ebe5951d5d4a4bac79ea2e40ec700, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -16490,7 +16490,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4aa40db3f33c9c64fa1dad9d388e13b1, type: 2}
+  - {fileID: 2100000, guid: 176ebe5951d5d4a4bac79ea2e40ec700, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -27158,7 +27158,7 @@ GameObject:
   - component: {fileID: 1671819528}
   - component: {fileID: 1671819527}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Bubble1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37313,7 +37313,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4aa40db3f33c9c64fa1dad9d388e13b1, type: 2}
+  - {fileID: 2100000, guid: 176ebe5951d5d4a4bac79ea2e40ec700, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -37334,7 +37334,7 @@ ParticleSystemRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_RenderMode: 0
+  m_RenderMode: 4
   m_MeshDistribution: 0
   m_SortMode: 0
   m_MinParticleSize: 0.02
