@@ -488,7 +488,7 @@ public class ZoneManager : MonoBehaviour
 
         // Adjust bubble sizes dynamically
         float distance = Vector3.Distance(player1.position, player2.position);
-        float sizeFactor = Mathf.Lerp(1f, 2.5f, Mathf.InverseLerp(minDistance, proximityRange, distance));
+        float sizeFactor = Mathf.Lerp(0.5f, 1.5f, Mathf.InverseLerp(minDistance, proximityRange, distance));
 
         bubbleCube.transform.localScale = new Vector3(sizeFactor, sizeFactor, sizeFactor);
         bubbleSphere.transform.localScale = new Vector3(sizeFactor, sizeFactor, sizeFactor);
