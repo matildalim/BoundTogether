@@ -86,7 +86,7 @@ public class StartScreenManager : MonoBehaviour
         }
 
         // When players touch, show "Press ENTER"
-        if (distance < proximityThreshold && !canStart)
+        if (/*distance < proximityThreshold && */ !canStart)
         {
             canStart = true;
             StartCoroutine(FadeTextIn(startTextCanvasGroup)); // Smooth fade-in effect
