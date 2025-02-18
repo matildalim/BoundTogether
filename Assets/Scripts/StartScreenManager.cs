@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class StartScreenManager : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class StartScreenManager : MonoBehaviour
 
     public GameObject startScreenPanel; // Start screen UI
     public GameObject introPanel; // Black screen with "Bound Together" & Controls
+    public GameObject pauseMenuPanel;
 
     public float fadeSpeed = 1.5f; // Speed of text fade-in and fade-out
     public float proximityThreshold = 1f; // Distance required for them to "connect"
@@ -21,10 +24,12 @@ public class StartScreenManager : MonoBehaviour
 
     private bool canStart = false;
     private bool gameStarted = false;
+    private bool isPaused = false;
     private CanvasGroup startTextCanvasGroup;
     private CanvasGroup controlsCanvasGroup;
     private CanvasGroup introCanvasGroup;
     private CanvasGroup introTextCanvasGroup;
+
 
     void Start()
     {
@@ -42,6 +47,7 @@ public class StartScreenManager : MonoBehaviour
 
         startScreenPanel.SetActive(false); // Ensure start screen is hidden at the beginning
         StartCoroutine(IntroSequence()); // Start intro animation
+        pauseMenuPanel.SetActive(false);
     }
 
     private IEnumerator IntroSequence()
@@ -74,6 +80,14 @@ public class StartScreenManager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isPaused)
+                ResumeGame();
+            else if (gameStarted)
+                PauseGame();
+        }
+
         if (gameStarted) return;
 
         float distance = Vector3.Distance(player1.position, player2.position);
@@ -113,6 +127,38 @@ public class StartScreenManager : MonoBehaviour
         // Start Zone 1 & BGM
         ZoneManager.Instance.StartGame();
     }
+
+    public void PauseGame()
+    {
+        pauseMenuPanel.SetActive(true);
+        Time.timeScale = 0f;
+        isPaused = true;
+
+        // Set the first selected button for keyboard navigation
+        EventSystem.current.SetSelectedGameObject(pauseMenuPanel.GetComponentInChildren<Button>().gameObject);
+    }
+
+    public void ResumeGame()
+    {
+        pauseMenuPanel.SetActive(false);
+        Time.timeScale = 1f;
+        isPaused = false;
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1f; // Ensure time scale is reset
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
+
 
     private IEnumerator FadeTextIn(CanvasGroup canvasGroup)
     {
