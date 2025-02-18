@@ -83,6 +83,7 @@ public class ZoneManager : MonoBehaviour
         if (!gameStarted)
         {
             gameStarted = true;
+            currentZoneIndex = 0;
             ActivateZone(0);
             timer = zoneDuration;
             AudioManager.Instance.PlayBGM();

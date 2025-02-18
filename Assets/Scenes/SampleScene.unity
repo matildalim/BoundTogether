@@ -501,7 +501,7 @@ MonoBehaviour:
   introText: {fileID: 1766012743}
   startScreenPanel: {fileID: 756272313}
   introPanel: {fileID: 856027339}
-  pauseMenuPanel: {fileID: 515592483}
+  pauseMenuPanel: {fileID: 0}
   fadeSpeed: 1.5
   proximityThreshold: 1
   magneticPullStrength: 2
@@ -6571,7 +6571,7 @@ MonoBehaviour:
   introText: {fileID: 1766012743}
   startScreenPanel: {fileID: 756272313}
   introPanel: {fileID: 856027339}
-  pauseMenuPanel: {fileID: 515592483}
+  pauseMenuPanel: {fileID: 0}
   fadeSpeed: 1.5
   proximityThreshold: 1
   magneticPullStrength: 2
@@ -11536,7 +11536,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -773, y: -249}
+  m_AnchoredPosition: {x: -773, y: -312}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &673500569
@@ -22028,7 +22028,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1044576146
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22068,7 +22068,7 @@ MonoBehaviour:
   introText: {fileID: 1766012743}
   startScreenPanel: {fileID: 756272313}
   introPanel: {fileID: 856027339}
-  pauseMenuPanel: {fileID: 515592483}
+  pauseMenuPanel: {fileID: 0}
   fadeSpeed: 1.5
   proximityThreshold: 1
   magneticPullStrength: 2
@@ -27284,7 +27284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1151350568
 RectTransform:
   m_ObjectHideFlags: 0

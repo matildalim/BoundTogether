@@ -128,6 +128,7 @@ public class StartScreenManager : MonoBehaviour
         ZoneManager.Instance.StartGame();
     }
 
+
     public void PauseGame()
     {
         pauseMenuPanel.SetActive(true);
